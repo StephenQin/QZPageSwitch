@@ -20,7 +20,7 @@
     self.navigationController.navigationBar.translucent  = NO;
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:252.0/255.0 green:182.0/255.0 blue:54.0/255.0 alpha:1.0];
     
-    QZPageSwitch *nSwitch = [[QZPageSwitch alloc] initWithTitles:@[@"你好",@"我好",@"大家好"]];
+    QZPageSwitch *nSwitch = [[QZPageSwitch alloc] initWithTitles:@[@"你好",@"我好大家好大家好大家好",@"大家好"]];
     [nSwitch addTarget:self action:@selector(switchChange:) forControlEvents:UIControlEventValueChanged];
     nSwitch.backgroundColor = [UIColor yellowColor];
     nSwitch.titleColor = [UIColor purpleColor];
@@ -29,8 +29,9 @@
     nSwitch.titleFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:20];
     nSwitch.selectedBackgroundInset = 0;
     nSwitch.frame = CGRectMake(0, 0, 250, 30);
-    self.navigationItem.titleView = nSwitch;
     [nSwitch setSelectedIndex:1 animated:NO];
+    [nSwitch setBadgeValue:5 forIndex:1];
+    self.navigationItem.titleView = nSwitch;
     
     QZPageSwitch *vSwitch = [[QZPageSwitch alloc] init];
     vSwitch.titles = @[@"昨天",@"今天",@"明天"];
@@ -41,6 +42,11 @@
     vSwitch.titleFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:16];
     vSwitch.selectedBackgroundInset = 5;
     vSwitch.frame = CGRectMake(50, 100, 250, 80);
+    vSwitch.badgeValueFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:20];
+    vSwitch.badgeValueBackgroundColor = [UIColor lightGrayColor];
+    vSwitch.badgeValueTextColor = [UIColor redColor];
+    [vSwitch setBadgeValue:99 forIndex:0];
+    [vSwitch setBadgeValue:5000000 forIndex:2];
     [self.view addSubview:vSwitch];
     
     QZPageSwitch *imgSwitch = [[QZPageSwitch alloc] init];
@@ -50,6 +56,7 @@
     imgSwitch.selectedTitleColor = [UIColor colorWithRed:135.0/255.0 green:227.0/255.0 blue:120.0/255.0 alpha:1.0];
     imgSwitch.frame = CGRectMake(50, 200, 250, 50);
     imgSwitch.selectedBackgroundImage = [UIImage imageNamed:@"bg1"];
+    [imgSwitch setBadgeValue:7 forIndex:1];
     [self.view addSubview:imgSwitch];
 }
 

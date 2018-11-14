@@ -28,6 +28,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSInteger selectedIndex;
 /**滑块的背景图片*/
 @property (nullable, nonatomic, strong) UIImage *selectedBackgroundImage;
+/**badgeValue字体*/
+@property (nonatomic, strong) UIFont *badgeValueFont;
+/**badgeValue文字颜色*/
+@property (nonatomic, strong) UIColor *badgeValueTextColor;
+/**badgeValue背景颜色*/
+@property (nonatomic, strong) UIColor *badgeValueBackgroundColor;
+
 /**
  初始化方法
 
@@ -42,6 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
  @param animated 是否开启动画
  */
 - (void)setSelectedIndex:(NSInteger)selectedIndex animated:(BOOL)animated;
+/**
+ 给指定的选项设置badgeValue
+
+ @param badgeValue 具体的值
+ @param index 选项角标
+ */
+- (void)setBadgeValue:(NSInteger)badgeValue forIndex:(NSInteger)index;
 @end
 
 NS_ASSUME_NONNULL_END

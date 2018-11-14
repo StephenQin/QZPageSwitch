@@ -18,14 +18,14 @@
 @property (nonatomic, strong) UIView  *titleMaskView;
 @property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
-@property (nonatomic, assign) CGRect initialSelectedBackgroundViewFrame;
-
 @property (nonatomic, copy)   NSString *titleFontFamily;
+@property (nonatomic, strong) NSMutableArray<UILabel *> *badgeLabels;
+@property (nonatomic, assign) CGRect initialSelectedBackgroundViewFrame;
 @property (nonatomic, assign) CGFloat titleFontSize;
-@property (nonatomic, assign) NSTimeInterval animationDuration;
 @property (nonatomic, assign) CGFloat animationSpringDamping;
 @property (nonatomic, assign) CGFloat animationInitialSpringVelocity;
 @property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, assign) NSTimeInterval animationDuration;
 @end
 @implementation QZPageSwitch
 
@@ -41,7 +41,7 @@
         label.font = self.titleFont;
         label.textColor = self.titleColor;
         label.textAlignment = NSTextAlignmentCenter;
-        label.lineBreakMode = NSLineBreakByTruncatingTail;
+        label.lineBreakMode = NSLineBreakByTruncatingMiddle;
         [self.titleLabelsContentView addSubview:label];
         [self.titleLabels addObject:label];
         UILabel *selectlabel = [[UILabel alloc] init];
@@ -49,9 +49,18 @@
         selectlabel.font = self.titleFont;
         selectlabel.textColor = self.selectedTitleColor;
         selectlabel.textAlignment = NSTextAlignmentCenter;
-        selectlabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        selectlabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
         [self.selectedTitleLabelsContentView addSubview:selectlabel];
         [self.selectedTitleLabels addObject:selectlabel];
+        UILabel *badgeLabel = [[UILabel alloc] init];
+        badgeLabel.text = @"";
+        badgeLabel.font = self.badgeValueFont;
+        badgeLabel.textColor = self.badgeValueTextColor;
+        badgeLabel.backgroundColor = self.badgeValueBackgroundColor;
+        badgeLabel.textAlignment = NSTextAlignmentCenter;
+        badgeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [self addSubview:badgeLabel];
+        [self.badgeLabels addObject:badgeLabel];
     }
 }
 - (void)setSelectedTitleColor:(UIColor *)selectedTitleColor {
@@ -69,6 +78,12 @@
         label.font = titleFont;
     }
 }
+- (void)setBadgeValueFont:(UIFont *)badgeValueFont {
+    _badgeValueFont = badgeValueFont;
+    for (UILabel *label in self.badgeLabels) {
+        label.font = badgeValueFont;
+    }
+}
 - (void)setTitleColor:(UIColor *)titleColor {
     _titleColor = titleColor;
     for (UILabel *label in self.titleLabels) {
@@ -83,7 +98,20 @@
     _selectedBackgroundImage = selectedBackgroundImage;
     self.selectedBackgroundView.image = selectedBackgroundImage;
 }
-
+- (void)setBadgeValue:(NSInteger)badgeValue forIndex:(NSInteger)index {
+    self.badgeLabels[index].text = [NSString stringWithFormat:@"%ld",badgeValue];
+    [self setNeedsLayout];
+}
+- (void)setBadgeValueTextColor:(UIColor *)badgeValueTextColor {
+    _badgeValueTextColor = badgeValueTextColor;
+    [self.badgeLabels setValue:badgeValueTextColor forKeyPath:@"textColor"];
+    [self setNeedsLayout];
+}
+- (void)setBadgeValueBackgroundColor:(UIColor *)badgeValueBackgroundColor {
+    _badgeValueBackgroundColor = badgeValueBackgroundColor;
+    [self.badgeLabels setValue:badgeValueBackgroundColor forKeyPath:@"backgroundColor"];
+    
+}
 #pragma mark ————— 事件 —————
 - (void)tapped:(UITapGestureRecognizer *)gesture {
     CGPoint location = [gesture locationInView:self];
@@ -141,16 +169,36 @@
         double x = floor((self.bounds.size.width / (CGFloat)self.titleLabels.count) * (CGFloat)idx + (self.bounds.size.width / (CGFloat)self.titleLabels.count - size.width) / 2.0);
         double y = floor((self.bounds.size.height - size.height) / 2);
         CGRect frame = CGRectMake(x, y, size.width, size.height);
+        CGPoint badgeCenter = CGPointMake(x + size.width , y);
+        UILabel *badgeLabel = self.badgeLabels[idx];
+        CGSize badgeSize = [badgeLabel sizeThatFits:CGSizeMake(50, 30)];
+        if (badgeSize.width > 50) {
+            badgeSize.width = 50;
+            if (badgeLabel.text.integerValue > 100) {
+                badgeLabel.text = @"100+";
+            }
+        }
+        badgeSize.width = badgeSize.height > badgeSize.width ? badgeSize.height : badgeSize.width;
         label.frame = frame;
         ((UILabel *)self.selectedTitleLabels[idx]).frame = frame;
+        badgeLabel.center = badgeCenter;
+        CGFloat badgeWidth = badgeSize.width;
+        CGFloat badgeHeight = badgeSize.height;
+        if (badgeSize.width != 0) {
+            badgeWidth  += 2;
+            badgeHeight += 2;
+        }
+        badgeLabel.bounds = CGRectMake(0, 0, badgeWidth, badgeHeight);
+        badgeLabel.layer.cornerRadius = badgeHeight * 0.5;
+        badgeLabel.layer.masksToBounds = YES;
     }];
 }
 
 #pragma mark ————— 基础设置 —————
 - (instancetype)initWithTitles:(NSArray *)titles {
     if (self = [super initWithFrame:CGRectZero]) {
-        self.titles = titles;
         [self finishInit];
+        self.titles = titles;
     }
     return self;
 }
@@ -182,7 +230,7 @@
     self.titleFontFamily = @"HelveticaNeue";
     self.selectedIndex = 0;
     self.selectedBackgroundInset = 2;
-    self.titleFontSize = 18.0;
+    self.titleFontSize = 16.0;
     self.animationDuration = 0.3;
     self.animationSpringDamping = 0.75;
     self.animationInitialSpringVelocity = 0.0;
@@ -192,6 +240,9 @@
     self.selectedTitleColor = [UIColor blackColor];
     [self.selectedBackgroundView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
     self.titleFont = [UIFont fontWithName:self.titleFontFamily size:self.titleFontSize];
+    self.badgeValueFont = [UIFont fontWithName:self.titleFontFamily size:self.titleFontSize];
+    self.badgeValueTextColor = [UIColor whiteColor];
+    self.badgeValueBackgroundColor = [UIColor redColor];
 }
 - (void)dealloc {
     [self removeObserver:self forKeyPath:@"frame"];
@@ -256,14 +307,21 @@
     }
     return _titleLabelsContentView;
 }
-- (NSArray *)titleLabels {
+- (NSMutableArray<UILabel *> *)badgeLabels {
+    if (!_badgeLabels) {
+        NSMutableArray *badgeLabels = [NSMutableArray array];
+        _badgeLabels = badgeLabels;
+    }
+    return _badgeLabels;
+}
+- (NSMutableArray<UILabel *> *)titleLabels {
     if (!_titleLabels) {
         NSMutableArray *titleLabels = [NSMutableArray array];
         _titleLabels = titleLabels;
     }
     return _titleLabels;
 }
-- (NSArray *)selectedTitleLabels {
+- (NSMutableArray<UILabel *> *)selectedTitleLabels {
     if (!_selectedTitleLabels) {
         NSMutableArray *selectedTitleLabels = [NSMutableArray array];
         _selectedTitleLabels = selectedTitleLabels;
