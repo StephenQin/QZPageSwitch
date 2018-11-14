@@ -57,11 +57,15 @@
     imgSwitch.frame = CGRectMake(50, 200, 250, 50);
     imgSwitch.selectedBackgroundImage = [UIImage imageNamed:@"bg1"];
     [imgSwitch setBadgeValue:7 forIndex:1];
+    [imgSwitch setBadgeValue:0 forIndex:0];
     [self.view addSubview:imgSwitch];
 }
 
 - (void)switchChange:(QZPageSwitch *)sender {
     NSLog(@"选择的角标是%ld",sender.selectedIndex);
+    if ([sender badgeValueFromIndex:sender.selectedIndex] != 0) {
+        [sender setBadgeValue:0 forIndex:sender.selectedIndex];
+    }
 }
 
 @end

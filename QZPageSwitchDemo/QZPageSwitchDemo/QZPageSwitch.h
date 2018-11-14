@@ -56,6 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
  @param index 选项角标
  */
 - (void)setBadgeValue:(NSInteger)badgeValue forIndex:(NSInteger)index;
+/**
+ 获取指定的badgeValue
+ 
+ @param index 选项角标
+ */
+- (NSInteger)badgeValueFromIndex:(NSInteger)index;
 @end
 
 NS_ASSUME_NONNULL_END

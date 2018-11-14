@@ -29,6 +29,10 @@
 @end
 @implementation QZPageSwitch
 
+#pragma mark ————— 取值 —————
+- (NSInteger)badgeValueFromIndex:(NSInteger)index {
+    return self.badgeLabels[index].text.integerValue;
+}
 #pragma mark ————— 赋值 —————
 - (void)setSelectedBackgroundInset:(CGFloat)selectedBackgroundInset {
     _selectedBackgroundInset = selectedBackgroundInset;
@@ -99,7 +103,11 @@
     self.selectedBackgroundView.image = selectedBackgroundImage;
 }
 - (void)setBadgeValue:(NSInteger)badgeValue forIndex:(NSInteger)index {
-    self.badgeLabels[index].text = [NSString stringWithFormat:@"%ld",badgeValue];
+    if (badgeValue == 0) {
+        self.badgeLabels[index].text = @"";
+    } else {
+        self.badgeLabels[index].text = [NSString stringWithFormat:@"%ld",badgeValue];
+    }
     [self setNeedsLayout];
 }
 - (void)setBadgeValueTextColor:(UIColor *)badgeValueTextColor {
