@@ -32,6 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
  @return 实例
  */
 - (instancetype)initWithTitles:(NSArray *)titles;
+/**
+ 设置选中的角标
+
+ @param selectedIndex 角标
+ @param animated 是否开启动画
+ */
+- (void)setSelectedIndex:(NSInteger)selectedIndex animated:(BOOL)animated;
 @end
 
 NS_ASSUME_NONNULL_END

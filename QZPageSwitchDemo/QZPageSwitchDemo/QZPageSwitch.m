@@ -99,7 +99,7 @@
         [self setSelectedIndex:index animated:YES];
     }
 }
-- (void)setSelectedIndex:(int)selectedIndex animated:(BOOL)animated {
+- (void)setSelectedIndex:(NSInteger)selectedIndex animated:(BOOL)animated {
     if (selectedIndex <= self.titleLabels.count) {
         BOOL catchHalfSwitch = NO;
         if (self.selectedIndex == selectedIndex) {

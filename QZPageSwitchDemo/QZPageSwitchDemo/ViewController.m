@@ -28,6 +28,7 @@
     nSwitch.selectedTitleColor = [UIColor yellowColor];
     nSwitch.frame = CGRectMake(0, 0, 250, 30);
     self.navigationItem.titleView = nSwitch;
+    [nSwitch setSelectedIndex:1 animated:NO];
     
     QZPageSwitch *vSwitch = [[QZPageSwitch alloc] init];
     vSwitch.titles = @[@"昨天",@"今天",@"明天"];
