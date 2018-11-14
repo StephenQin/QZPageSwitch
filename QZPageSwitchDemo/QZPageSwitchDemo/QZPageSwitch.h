@@ -14,17 +14,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**titles数组*/
 @property (nonatomic, copy) NSArray *titles;
-/**选中背景颜色*/
+/**滑块背景颜色*/
 @property (nonatomic, strong) UIColor *selectedBackgroundColor;
 /**标题颜色*/
 @property (nonatomic, strong) UIColor *titleColor;
 /**选中标题颜色*/
-@property (nonatomic, strong) UIColor *selectedTitleColor;
+@property (nullable, nonatomic, strong) UIColor *selectedTitleColor;
+/**滑块的内边距*/
+@property (nonatomic, assign) CGFloat selectedBackgroundInset;
 /**title字体*/
-@property (nonatomic, strong) UIFont  *titleFont;
+@property (nonatomic, strong) UIFont *titleFont;
 /**选择的角标*/
 @property (nonatomic, assign, readonly) NSInteger selectedIndex;
-
+/**滑块的背景图片*/
+@property (nullable, nonatomic, strong) UIImage *selectedBackgroundImage;
 /**
  初始化方法
 

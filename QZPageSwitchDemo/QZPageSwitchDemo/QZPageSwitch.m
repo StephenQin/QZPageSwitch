@@ -14,12 +14,12 @@
 @property (nonatomic, strong) NSMutableArray<UILabel *> *titleLabels;
 @property (nonatomic, strong) UIView  *selectedTitleLabelsContentView;
 @property (nonatomic, strong) NSMutableArray<UILabel *> *selectedTitleLabels;
-@property (nonatomic, strong) UIView  *selectedBackgroundView;
+@property (nonatomic, strong) UIImageView  *selectedBackgroundView;
 @property (nonatomic, strong) UIView  *titleMaskView;
 @property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
 @property (nonatomic, assign) CGRect initialSelectedBackgroundViewFrame;
-@property (nonatomic, assign) CGFloat selectedBackgroundInset;
+
 @property (nonatomic, copy)   NSString *titleFontFamily;
 @property (nonatomic, assign) CGFloat titleFontSize;
 @property (nonatomic, assign) NSTimeInterval animationDuration;
@@ -79,6 +79,10 @@
     _selectedBackgroundColor = selectedBackgroundColor;
     self.selectedBackgroundView.backgroundColor = selectedBackgroundColor;
 }
+- (void)setSelectedBackgroundImage:(UIImage *)selectedBackgroundImage {
+    _selectedBackgroundImage = selectedBackgroundImage;
+    self.selectedBackgroundView.image = selectedBackgroundImage;
+}
 
 #pragma mark ————— 事件 —————
 - (void)tapped:(UITapGestureRecognizer *)gesture {
@@ -128,6 +132,7 @@
     self.titleLabelsContentView.frame = self.selectedTitleLabelsContentView.frame = self.bounds;
     self.layer.cornerRadius = self.bounds.size.height * 0.5;
     self.selectedBackgroundView.layer.cornerRadius = self.selectedBackgroundView.frame.size.height * 0.5;
+    self.selectedBackgroundView.layer.masksToBounds = YES;
     CGFloat titleLabelMaxWidth = selectedBackgroundWidth;
     CGFloat titleLabelMaxHeight = self.bounds.size.height - self.selectedBackgroundInset * 2.0;
     [self.titleLabels enumerateObjectsUsingBlock:^(UILabel *label, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -230,9 +235,9 @@
     }
     return _titleMaskView;
 }
-- (UIView *)selectedBackgroundView {
+- (UIImageView *)selectedBackgroundView {
     if (!_selectedBackgroundView) {
-        UIView *selectedBackgroundView = [UIView new];
+        UIImageView *selectedBackgroundView = [UIImageView new];
         _selectedBackgroundView = selectedBackgroundView;
     }
     return _selectedBackgroundView;
