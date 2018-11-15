@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIColor *badgeValueTextColor;
 /**badgeValue背景颜色*/
 @property (nonatomic, strong) UIColor *badgeValueBackgroundColor;
+/**被监听的滚动试图*/
+@property (nonatomic, strong) UIScrollView *switchPageView;
 
 /**
  初始化方法

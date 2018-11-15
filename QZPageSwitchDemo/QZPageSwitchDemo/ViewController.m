@@ -8,7 +8,10 @@
 
 #import "ViewController.h"
 #import "QZPageSwitch.h"
+#import "pageViewController.h"
 
+#define kScreenWidth ([[UIScreen mainScreen] bounds].size.width)
+#define kScreenHeight [[UIScreen mainScreen] bounds].size.height
 @interface ViewController ()
 
 @end
@@ -59,8 +62,19 @@
     [imgSwitch setBadgeValue:7 forIndex:1];
     [imgSwitch setBadgeValue:0 forIndex:0];
     [self.view addSubview:imgSwitch];
+    
+    UIButton *pageVcBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    pageVcBtn.frame = CGRectMake(20, 280, kScreenWidth - 40, 50);
+    [pageVcBtn setTitle:@"滚动跟随" forState:UIControlStateNormal];
+    pageVcBtn.titleLabel.textColor = [UIColor whiteColor];
+    pageVcBtn.backgroundColor = [UIColor redColor];
+    [pageVcBtn addTarget:self action:@selector(pageVcBtnAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:pageVcBtn];
 }
-
+- (void)pageVcBtnAction:(UIButton *)sender {
+    pageViewController *pageVc = [pageViewController new];
+    [self.navigationController pushViewController:pageVc animated:YES];
+}
 - (void)switchChange:(QZPageSwitch *)sender {
     NSLog(@"选择的角标是%ld",sender.selectedIndex);
     if ([sender badgeValueFromIndex:sender.selectedIndex] != 0) {

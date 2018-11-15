@@ -17,6 +17,10 @@
 		F0255F17219BEBB8008ED9AA /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = F0255F16219BEBB7008ED9AA /* bg.png */; };
 		F0255F19219BECA7008ED9AA /* bg1.png in Resources */ = {isa = PBXBuildFile; fileRef = F0255F18219BECA7008ED9AA /* bg1.png */; };
 		F0255F1B219BED96008ED9AA /* bg2.png in Resources */ = {isa = PBXBuildFile; fileRef = F0255F1A219BED96008ED9AA /* bg2.png */; };
+		F0255F1E219D3ED6008ED9AA /* pageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F0255F1D219D3ED6008ED9AA /* pageViewController.m */; };
+		F0255F22219D4B1C008ED9AA /* taidi.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F0255F1F219D4B1C008ED9AA /* taidi.jpg */; };
+		F0255F23219D4B1C008ED9AA /* xiaochai.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F0255F20219D4B1C008ED9AA /* xiaochai.jpg */; };
+		F0255F24219D4B1C008ED9AA /* keji.jpg in Resources */ = {isa = PBXBuildFile; fileRef = F0255F21219D4B1C008ED9AA /* keji.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +39,11 @@
 		F0255F16219BEBB7008ED9AA /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
 		F0255F18219BECA7008ED9AA /* bg1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg1.png; sourceTree = "<group>"; };
 		F0255F1A219BED96008ED9AA /* bg2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg2.png; sourceTree = "<group>"; };
+		F0255F1C219D3ED6008ED9AA /* pageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pageViewController.h; sourceTree = "<group>"; };
+		F0255F1D219D3ED6008ED9AA /* pageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = pageViewController.m; sourceTree = "<group>"; };
+		F0255F1F219D4B1C008ED9AA /* taidi.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = taidi.jpg; sourceTree = "<group>"; };
+		F0255F20219D4B1C008ED9AA /* xiaochai.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = xiaochai.jpg; sourceTree = "<group>"; };
+		F0255F21219D4B1C008ED9AA /* keji.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = keji.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +80,8 @@
 				F0255EFC219AB6B5008ED9AA /* AppDelegate.m */,
 				F0255EFE219AB6B5008ED9AA /* ViewController.h */,
 				F0255EFF219AB6B5008ED9AA /* ViewController.m */,
+				F0255F1C219D3ED6008ED9AA /* pageViewController.h */,
+				F0255F1D219D3ED6008ED9AA /* pageViewController.m */,
 				F0255F11219AB752008ED9AA /* QZPageSwitch.h */,
 				F0255F12219AB753008ED9AA /* QZPageSwitch.m */,
 				F0255F01219AB6B5008ED9AA /* Main.storyboard */,
@@ -78,6 +89,9 @@
 				F0255F06219AB6B7008ED9AA /* LaunchScreen.storyboard */,
 				F0255F09219AB6B7008ED9AA /* Info.plist */,
 				F0255F0A219AB6B7008ED9AA /* main.m */,
+				F0255F21219D4B1C008ED9AA /* keji.jpg */,
+				F0255F1F219D4B1C008ED9AA /* taidi.jpg */,
+				F0255F20219D4B1C008ED9AA /* xiaochai.jpg */,
 				F0255F16219BEBB7008ED9AA /* bg.png */,
 				F0255F18219BECA7008ED9AA /* bg1.png */,
 				F0255F1A219BED96008ED9AA /* bg2.png */,
@@ -142,8 +156,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0255F22219D4B1C008ED9AA /* taidi.jpg in Resources */,
+				F0255F23219D4B1C008ED9AA /* xiaochai.jpg in Resources */,
 				F0255F19219BECA7008ED9AA /* bg1.png in Resources */,
 				F0255F17219BEBB8008ED9AA /* bg.png in Resources */,
+				F0255F24219D4B1C008ED9AA /* keji.jpg in Resources */,
 				F0255F08219AB6B7008ED9AA /* LaunchScreen.storyboard in Resources */,
 				F0255F1B219BED96008ED9AA /* bg2.png in Resources */,
 				F0255F05219AB6B7008ED9AA /* Assets.xcassets in Resources */,
@@ -161,6 +178,7 @@
 				F0255F00219AB6B5008ED9AA /* ViewController.m in Sources */,
 				F0255F0B219AB6B7008ED9AA /* main.m in Sources */,
 				F0255EFD219AB6B5008ED9AA /* AppDelegate.m in Sources */,
+				F0255F1E219D3ED6008ED9AA /* pageViewController.m in Sources */,
 				F0255F13219AB753008ED9AA /* QZPageSwitch.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

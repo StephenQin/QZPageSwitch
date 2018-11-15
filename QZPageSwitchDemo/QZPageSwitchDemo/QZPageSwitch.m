@@ -39,6 +39,7 @@
     [self setNeedsLayout];
 }
 - (void)setTitles:(NSArray *)titles {
+    _titles = titles;
     for (NSString *str in titles) {
         UILabel *label = [[UILabel alloc] init];
         label.text = str;
@@ -118,7 +119,14 @@
 - (void)setBadgeValueBackgroundColor:(UIColor *)badgeValueBackgroundColor {
     _badgeValueBackgroundColor = badgeValueBackgroundColor;
     [self.badgeLabels setValue:badgeValueBackgroundColor forKeyPath:@"backgroundColor"];
-    
+}
+- (void)setSwitchPageView:(UIScrollView *)switchPageView {
+    _switchPageView = switchPageView;
+    if (switchPageView) {
+        switchPageView.pagingEnabled = YES;
+        switchPageView.contentSize = CGSizeMake(switchPageView.bounds.size.width * self.titles.count, switchPageView.bounds.size.height);
+        [switchPageView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    }
 }
 #pragma mark ————— 事件 —————
 - (void)tapped:(UITapGestureRecognizer *)gesture {
@@ -153,7 +161,12 @@
             [UIView animateWithDuration:self.animationDuration delay:0.0 usingSpringWithDamping:self.animationSpringDamping initialSpringVelocity:self.animationInitialSpringVelocity options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationCurveEaseOut animations:^{
                 [self setNeedsLayout];
                 [self layoutIfNeeded];
-            } completion:nil];
+            } completion:^(BOOL finished) { // 动画结束切换scrollview的位置
+                if (self.switchPageView) {
+                    CGPoint contentOffset = CGPointMake(selectedIndex * self.switchPageView.bounds.size.width, 0);
+                    [self.switchPageView setContentOffset:contentOffset animated:NO];
+                }
+            }];
         } else {
             [self setNeedsLayout];
             [self layoutIfNeeded];
@@ -201,7 +214,22 @@
         badgeLabel.layer.masksToBounds = YES;
     }];
 }
-
+- (void)moveSwitchBySwitchPageView:(UIScrollView *)switchPageView {
+    if (!switchPageView.isDragging && !switchPageView.isDecelerating) {return;}
+    if (switchPageView.contentOffset.x < 0 || switchPageView.contentOffset.x > switchPageView.contentSize.width - switchPageView.bounds.size.width) {return;}
+    CGFloat currentOffSetX = switchPageView.contentOffset.x;
+    CGFloat offsetProgress = currentOffSetX / switchPageView.bounds.size.width;
+    NSLog(@"switchPageView的偏移量是%f",offsetProgress);
+    CGRect bgFrame = self.selectedBackgroundView.frame;
+    NSLog(@"selectedBackgroundView的frame是：%@",NSStringFromCGRect(bgFrame));
+    bgFrame.origin.x = (self.bounds.size.width / self.titles.count) * offsetProgress + self.selectedBackgroundInset;
+    NSLog(@"向上取整%f",ceilf(offsetProgress + 1));
+    self.selectedBackgroundView.frame = bgFrame;
+    NSInteger index = ceilf(offsetProgress);
+    if (switchPageView.contentOffset.x == index * switchPageView.bounds.size.width) {
+        self.selectedIndex = index;
+    }
+}
 #pragma mark ————— 基础设置 —————
 - (instancetype)initWithTitles:(NSArray *)titles {
     if (self = [super initWithFrame:CGRectZero]) {
@@ -253,13 +281,17 @@
     self.badgeValueBackgroundColor = [UIColor redColor];
 }
 - (void)dealloc {
-    [self removeObserver:self forKeyPath:@"frame"];
+    [self.selectedBackgroundView removeObserver:self forKeyPath:@"frame"];
 }
 
 #pragma mark ————— kvo —————
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"frame"]) {
+    if ([keyPath isEqualToString:@"frame"] && object == self.selectedBackgroundView) {
         self.titleMaskView.frame = self.selectedBackgroundView.frame;
+    } else if ([keyPath isEqualToString:@"contentOffset"] && object == self.switchPageView) {// 根据scrollview的偏移量来设置滑块的位置
+        [self moveSwitchBySwitchPageView:self.switchPageView];
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
