@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "QZPageSwitch.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface pageViewController : UIViewController
-
+@property (nonatomic, assign) QZPageSwitchFollowStyle switchStyle;
 @end
 
 NS_ASSUME_NONNULL_END

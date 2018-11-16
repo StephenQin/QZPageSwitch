@@ -13,7 +13,7 @@
 #define kScreenWidth ([[UIScreen mainScreen] bounds].size.width)
 #define kScreenHeight [[UIScreen mainScreen] bounds].size.height
 @interface ViewController ()
-
+@property (nonatomic, weak) QZPageSwitch *pageSwitch;
 @end
 
 @implementation ViewController
@@ -35,6 +35,7 @@
     [nSwitch setSelectedIndex:1 animated:NO];
     [nSwitch setBadgeValue:5 forIndex:1];
     self.navigationItem.titleView = nSwitch;
+    self.pageSwitch = nSwitch;
     
     QZPageSwitch *vSwitch = [[QZPageSwitch alloc] init];
     vSwitch.titles = @[@"昨天",@"今天",@"明天"];
@@ -73,6 +74,9 @@
 }
 - (void)pageVcBtnAction:(UIButton *)sender {
     pageViewController *pageVc = [pageViewController new];
+    if (self.pageSwitch.selectedIndex == 1) {
+        pageVc.switchStyle = QZPageSwitchFollowStyleMatch;
+    }
     [self.navigationController pushViewController:pageVc animated:YES];
 }
 - (void)switchChange:(QZPageSwitch *)sender {

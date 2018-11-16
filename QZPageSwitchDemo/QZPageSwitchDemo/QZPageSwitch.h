@@ -9,7 +9,10 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+typedef NS_ENUM(NSInteger, QZPageSwitchFollowStyle) {
+    QZPageSwitchFollowStyleNormal = 0,
+    QZPageSwitchFollowStyleMatch,
+};
 @interface QZPageSwitch : UIControl
 
 /**titles数组*/
@@ -36,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIColor *badgeValueBackgroundColor;
 /**被监听的滚动试图*/
 @property (nonatomic, strong) UIScrollView *switchPageView;
+/**滑块的匹配模式*/
+@property (nonatomic, assign) QZPageSwitchFollowStyle followStyle;
 
 /**
  初始化方法

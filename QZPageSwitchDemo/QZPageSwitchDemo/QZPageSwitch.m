@@ -27,7 +27,9 @@
 @property (nonatomic, assign) NSInteger selectedIndex;
 @property (nonatomic, assign) NSTimeInterval animationDuration;
 @end
-@implementation QZPageSwitch
+@implementation QZPageSwitch {
+    CGFloat _lastOffSetX;
+}
 
 #pragma mark ————— 取值 —————
 - (NSInteger)badgeValueFromIndex:(NSInteger)index {
@@ -126,15 +128,18 @@
         switchPageView.pagingEnabled = YES;
         switchPageView.contentSize = CGSizeMake(switchPageView.bounds.size.width * self.titles.count, switchPageView.bounds.size.height);
         [switchPageView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+        // 可以设置偏移
     }
 }
-#pragma mark ————— 事件 —————
+#pragma mark ————— 事件 —————l
+// 点击switch滑块
 - (void)tapped:(UITapGestureRecognizer *)gesture {
     CGPoint location = [gesture locationInView:self];
     int index = (int)(location.x / (self.bounds.size.width  / (1.0 * self.titleLabels.count)));
     BOOL animated =  (self.selectedIndex + 1 == index || self.selectedIndex - 1 == index) ? YES : NO;
     [self setSelectedIndex:index animated:animated];
 }
+// 拖动switch滑块
 - (void)pan:(UIPanGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateBegan) {
         self.initialSelectedBackgroundViewFrame = self.selectedBackgroundView.frame;
@@ -148,6 +153,7 @@
         [self setSelectedIndex:index animated:YES];
     }
 }
+// 设置选中哪一个switch滑块
 - (void)setSelectedIndex:(NSInteger)selectedIndex animated:(BOOL)animated {
     if (selectedIndex <= self.titleLabels.count) {
         BOOL catchHalfSwitch = NO;
@@ -179,14 +185,12 @@
         }
     }
 }
+// 布局
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGFloat selectedBackgroundWidth = self.bounds.size.width / (CGFloat)(self.titleLabels.count) - self.selectedBackgroundInset * 2.0;
-    self.selectedBackgroundView.frame = CGRectMake(self.selectedBackgroundInset + (CGFloat)(self.selectedIndex) * (selectedBackgroundWidth + self.selectedBackgroundInset * 2.0), self.selectedBackgroundInset, selectedBackgroundWidth, self.bounds.size.height - self.selectedBackgroundInset * 2.0);
     self.titleLabelsContentView.frame = self.selectedTitleLabelsContentView.frame = self.bounds;
     self.layer.cornerRadius = self.bounds.size.height * 0.5;
-    self.selectedBackgroundView.layer.cornerRadius = self.selectedBackgroundView.frame.size.height * 0.5;
-    self.selectedBackgroundView.layer.masksToBounds = YES;
     CGFloat titleLabelMaxWidth = selectedBackgroundWidth;
     CGFloat titleLabelMaxHeight = self.bounds.size.height - self.selectedBackgroundInset * 2.0;
     [self.titleLabels enumerateObjectsUsingBlock:^(UILabel *label, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -195,6 +199,9 @@
         double x = floor((self.bounds.size.width / (CGFloat)self.titleLabels.count) * (CGFloat)idx + (self.bounds.size.width / (CGFloat)self.titleLabels.count - size.width) / 2.0);
         double y = floor((self.bounds.size.height - size.height) / 2);
         CGRect frame = CGRectMake(x, y, size.width, size.height);
+        label.frame = frame;
+        ((UILabel *)self.selectedTitleLabels[idx]).frame = frame;
+        // 设置 badgeValue
         CGPoint badgeCenter = CGPointMake(x + size.width , y);
         UILabel *badgeLabel = self.badgeLabels[idx];
         CGSize badgeSize = [badgeLabel sizeThatFits:CGSizeMake(50, 30)];
@@ -205,8 +212,6 @@
             }
         }
         badgeSize.width = badgeSize.height > badgeSize.width ? badgeSize.height : badgeSize.width;
-        label.frame = frame;
-        ((UILabel *)self.selectedTitleLabels[idx]).frame = frame;
         badgeLabel.center = badgeCenter;
         CGFloat badgeWidth = badgeSize.width;
         CGFloat badgeHeight = badgeSize.height;
@@ -218,7 +223,18 @@
         badgeLabel.layer.cornerRadius = badgeHeight * 0.5;
         badgeLabel.layer.masksToBounds = YES;
     }];
+    switch (self.followStyle) {
+        case QZPageSwitchFollowStyleNormal:
+            self.selectedBackgroundView.frame = CGRectMake(self.selectedBackgroundInset + (CGFloat)(self.selectedIndex) * (selectedBackgroundWidth + self.selectedBackgroundInset * 2.0), self.selectedBackgroundInset, selectedBackgroundWidth, self.bounds.size.height - self.selectedBackgroundInset * 2.0);
+            break;
+        case QZPageSwitchFollowStyleMatch:
+            self.selectedBackgroundView.frame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
+            break;
+    }
+    self.selectedBackgroundView.layer.cornerRadius = self.selectedBackgroundView.frame.size.height * 0.5;
+    self.selectedBackgroundView.layer.masksToBounds = YES;
 }
+// scrollview的contentOffset监听方法
 - (void)moveSwitchBySwitchPageView:(UIScrollView *)switchPageView {
     if (!switchPageView.isDragging && !switchPageView.isDecelerating) {return;}
     if (switchPageView.contentOffset.x < 0 || switchPageView.contentOffset.x > switchPageView.contentSize.width - switchPageView.bounds.size.width) {return;}
@@ -226,14 +242,42 @@
     CGFloat offsetProgress = currentOffSetX / switchPageView.bounds.size.width;
     NSLog(@"switchPageView的偏移量是%f",offsetProgress);
     CGRect bgFrame = self.selectedBackgroundView.frame;
-    NSLog(@"selectedBackgroundView的frame是：%@",NSStringFromCGRect(bgFrame));
-    bgFrame.origin.x = (self.bounds.size.width / self.titles.count) * offsetProgress + self.selectedBackgroundInset;
-    NSLog(@"向上取整%f",ceilf(offsetProgress + 1));
-    self.selectedBackgroundView.frame = bgFrame;
     NSInteger index = ceilf(offsetProgress);
+    switch (self.followStyle) {
+        case QZPageSwitchFollowStyleNormal:
+        {
+            bgFrame.origin.x = (self.bounds.size.width / self.titles.count) * offsetProgress + self.selectedBackgroundInset;
+            self.selectedBackgroundView.frame = bgFrame;
+        }
+            break;
+        case QZPageSwitchFollowStyleMatch:
+        {
+//            if (<#condition#>) {
+//                <#statements#>
+//            }
+        }
+            break;
+    }
     if (switchPageView.contentOffset.x == index * switchPageView.bounds.size.width) {
         self.selectedIndex = index;
     }
+    NSLog(@"选中的角标是%ld",self.selectedIndex);
+}
+// 计算对应index的滑块的frame
+- (CGRect)expectedFrameForSelectedBackgroundViewToIndex:(NSInteger)toIndex {
+    UILabel *toLabel = self.titleLabels[toIndex];
+    CGRect toFrame   = toLabel.frame;
+    CGFloat toHeight  = self.bounds.size.height - self.selectedBackgroundInset * 2;
+    CGFloat toWidth;
+    NSInteger x;
+    if (toFrame.size.width + 6 < toHeight) {
+        toWidth = toHeight;
+        x = toFrame.origin.x - (toHeight - toFrame.size.width) * 0.5;
+    } else {
+        toWidth = toFrame.size.width + 6;
+        x = toFrame.origin.x - 3;
+    }
+    return CGRectMake(x, self.selectedBackgroundInset, toWidth, toHeight);
 }
 #pragma mark ————— 基础设置 —————
 - (instancetype)initWithTitles:(NSArray *)titles {
@@ -272,7 +316,7 @@
     self.selectedIndex = 0;
     self.selectedBackgroundInset = 2;
     self.titleFontSize = 16.0;
-    self.animationDuration = 0.3;
+    self.animationDuration = 0.25;
     self.animationSpringDamping = 0.75;
     self.animationInitialSpringVelocity = 0.0;
     self.backgroundColor = [UIColor blackColor];
@@ -284,9 +328,13 @@
     self.badgeValueFont = [UIFont fontWithName:self.titleFontFamily size:self.titleFontSize];
     self.badgeValueTextColor = [UIColor whiteColor];
     self.badgeValueBackgroundColor = [UIColor redColor];
+    self.followStyle = QZPageSwitchFollowStyleNormal;
 }
 - (void)dealloc {
     [self.selectedBackgroundView removeObserver:self forKeyPath:@"frame"];
+    if (self.switchPageView) {
+        [self.switchPageView removeObserver:self forKeyPath:@"contentOffset"];
+    }
 }
 
 #pragma mark ————— kvo —————

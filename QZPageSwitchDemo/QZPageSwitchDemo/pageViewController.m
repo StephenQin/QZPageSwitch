@@ -7,7 +7,6 @@
 //
 
 #import "pageViewController.h"
-#import "QZPageSwitch.h"
 
 #define kScreenWidth ([[UIScreen mainScreen] bounds].size.width)
 #define kScreenHeight [[UIScreen mainScreen] bounds].size.height
@@ -22,12 +21,15 @@
     self.view.backgroundColor = [UIColor darkGrayColor];
     
     QZPageSwitch *imgSwitch = [[QZPageSwitch alloc] init];
-    imgSwitch.titles = @[@"柯基",@"泰迪",@"小柴"];
+    imgSwitch.titles = @[@"柯基",@"泰日天",@"小柴"];
     imgSwitch.backgroundColor = [UIColor colorWithRed:122.0/255.0 green:203.0/255.0 blue:108.0/255.0 alpha:1.0];
     imgSwitch.titleColor = [UIColor whiteColor];
     imgSwitch.selectedTitleColor = [UIColor colorWithRed:135.0/255.0 green:227.0/255.0 blue:120.0/255.0 alpha:1.0];
     imgSwitch.frame = CGRectMake(50, 0, kScreenWidth - 100, 50);
     imgSwitch.selectedBackgroundImage = [UIImage imageNamed:@"bg1"];
+    imgSwitch.followStyle = self.switchStyle;
+    [imgSwitch addTarget:self action:@selector(aaa:) forControlEvents:UIControlEventValueChanged];
+    [imgSwitch setSelectedIndex:2 animated:NO];
     [self.view addSubview:imgSwitch];
     
     UIScrollView *pageView = [[UIScrollView alloc] initWithFrame:CGRectMake(50, 60, kScreenWidth - 100, 400)];
@@ -48,8 +50,13 @@
     [pageView addSubview:cotainView];
     [self.view addSubview:pageView];
     imgSwitch.switchPageView = pageView;
+//    [imgSwitch setSelectedIndex:2 animated:NO];
 }
 
-
+- (void)aaa:(QZPageSwitch *)imgSwitch {
+    if (imgSwitch.selectedIndex == 2) {
+        
+    }
+}
 
 @end
