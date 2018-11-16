@@ -132,7 +132,8 @@
 - (void)tapped:(UITapGestureRecognizer *)gesture {
     CGPoint location = [gesture locationInView:self];
     int index = (int)(location.x / (self.bounds.size.width  / (1.0 * self.titleLabels.count)));
-    [self setSelectedIndex:index animated:YES];
+    BOOL animated =  (self.selectedIndex + 1 == index || self.selectedIndex - 1 == index) ? YES : NO;
+    [self setSelectedIndex:index animated:animated];
 }
 - (void)pan:(UIPanGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateBegan) {
@@ -171,6 +172,10 @@
             [self setNeedsLayout];
             [self layoutIfNeeded];
             [self sendActionsForControlEvents:UIControlEventValueChanged];
+            if (self.switchPageView) {
+                CGPoint contentOffset = CGPointMake(selectedIndex * self.switchPageView.bounds.size.width, 0);
+                [self.switchPageView setContentOffset:contentOffset animated:NO];
+            }
         }
     }
 }
