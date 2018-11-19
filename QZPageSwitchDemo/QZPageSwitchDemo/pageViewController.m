@@ -29,7 +29,7 @@
     imgSwitch.selectedBackgroundImage = [UIImage imageNamed:@"bg1"];
     imgSwitch.followStyle = self.switchStyle;
     [imgSwitch addTarget:self action:@selector(aaa:) forControlEvents:UIControlEventValueChanged];
-    [imgSwitch setSelectedIndex:2 animated:NO];
+//    [imgSwitch setSelectedIndex:2 animated:NO];
     [self.view addSubview:imgSwitch];
     
     UIScrollView *pageView = [[UIScrollView alloc] initWithFrame:CGRectMake(50, 60, kScreenWidth - 100, 400)];
@@ -50,7 +50,7 @@
     [pageView addSubview:cotainView];
     [self.view addSubview:pageView];
     imgSwitch.switchPageView = pageView;
-//    [imgSwitch setSelectedIndex:2 animated:NO];
+    [imgSwitch setSelectedIndex:2 animated:NO];
 }
 
 - (void)aaa:(QZPageSwitch *)imgSwitch {

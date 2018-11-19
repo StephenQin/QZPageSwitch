@@ -9,6 +9,11 @@
 #import "QZPageSwitch.h"
 #import <objc/runtime.h>
 
+#ifdef DEBUG
+#define QZLog(FORMAT, ...) fprintf(stderr, "%s:%d\t%s\n", [[[NSString stringWithUTF8String: __FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat: FORMAT, ## __VA_ARGS__] UTF8String]);
+#else
+#define FLog(FORMAT, ...) nil
+#endif
 @interface QZPageSwitch()<UIGestureRecognizerDelegate>
 @property (nonatomic, strong) UIView  *titleLabelsContentView;
 @property (nonatomic, strong) NSMutableArray<UILabel *> *titleLabels;
@@ -29,6 +34,7 @@
 @end
 @implementation QZPageSwitch {
     CGFloat _lastOffSetX;
+    CGRect  _bgFrame;
 }
 
 #pragma mark ————— 取值 —————
@@ -228,7 +234,13 @@
             self.selectedBackgroundView.frame = CGRectMake(self.selectedBackgroundInset + (CGFloat)(self.selectedIndex) * (selectedBackgroundWidth + self.selectedBackgroundInset * 2.0), self.selectedBackgroundInset, selectedBackgroundWidth, self.bounds.size.height - self.selectedBackgroundInset * 2.0);
             break;
         case QZPageSwitchFollowStyleMatch:
-            self.selectedBackgroundView.frame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
+        {
+            if (!self.switchPageView.decelerating && !self.switchPageView.isTracking) { // 点击或拖动switch或计算默认位置
+                _bgFrame =  self.selectedBackgroundView.frame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
+            } else {// 拖动switchPageView
+                QZLog(@"2switch的frame是%@",NSStringFromCGRect(self.selectedBackgroundView.frame));
+            }
+        }
             break;
     }
     self.selectedBackgroundView.layer.cornerRadius = self.selectedBackgroundView.frame.size.height * 0.5;
@@ -240,9 +252,11 @@
     if (switchPageView.contentOffset.x < 0 || switchPageView.contentOffset.x > switchPageView.contentSize.width - switchPageView.bounds.size.width) {return;}
     CGFloat currentOffSetX = switchPageView.contentOffset.x;
     CGFloat offsetProgress = currentOffSetX / switchPageView.bounds.size.width;
-    NSLog(@"switchPageView的偏移量是%f",offsetProgress);
     CGRect bgFrame = self.selectedBackgroundView.frame;
     NSInteger index = ceilf(offsetProgress);
+    CGFloat progress = offsetProgress - (NSInteger)offsetProgress;
+    NSInteger toIndex = 0;
+    NSInteger fromIndex = 0;
     switch (self.followStyle) {
         case QZPageSwitchFollowStyleNormal:
         {
@@ -252,18 +266,31 @@
             break;
         case QZPageSwitchFollowStyleMatch:
         {
-//            if (<#condition#>) {
-//                <#statements#>
-//            }
+            _lastOffSetX = switchPageView.bounds.size.width * self.selectedIndex;
+            if (currentOffSetX - _lastOffSetX > 0) { // left
+                if (progress == 0) {progress = 1;}
+                fromIndex = currentOffSetX / switchPageView.bounds.size.width;
+                toIndex = progress == 1 ? fromIndex : fromIndex + 1;
+                CGRect toFrame = [self expectedFrameForSelectedBackgroundViewToIndex:toIndex];
+                bgFrame.origin.x = (toFrame.origin.x - _bgFrame.origin.x) * progress + _bgFrame.origin.x;
+                bgFrame.size.width = (toFrame.size.width - _bgFrame.size.width) * progress + _bgFrame.size.width;
+                self.selectedBackgroundView.frame = bgFrame;
+            } else if (currentOffSetX - _lastOffSetX < 0) {// right
+                toIndex = currentOffSetX / switchPageView.bounds.size.width;
+                CGRect toFrame = [self expectedFrameForSelectedBackgroundViewToIndex:toIndex];
+                bgFrame.origin.x = (toFrame.origin.x - _bgFrame.origin.x) * (1 - progress) + _bgFrame.origin.x;
+                bgFrame.size.width = (toFrame.size.width - _bgFrame.size.width) * (1 - progress) + _bgFrame.size.width;
+                self.selectedBackgroundView.frame = bgFrame;
+            }
         }
             break;
     }
     if (switchPageView.contentOffset.x == index * switchPageView.bounds.size.width) {
         self.selectedIndex = index;
+        _bgFrame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
     }
-    NSLog(@"选中的角标是%ld",self.selectedIndex);
 }
-// 计算对应index的滑块的frame
+// QZPageSwitchFollowStyleMatch时计算对应index的滑块的frame
 - (CGRect)expectedFrameForSelectedBackgroundViewToIndex:(NSInteger)toIndex {
     UILabel *toLabel = self.titleLabels[toIndex];
     CGRect toFrame   = toLabel.frame;

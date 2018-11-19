@@ -23,7 +23,7 @@
     self.navigationController.navigationBar.translucent  = NO;
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:252.0/255.0 green:182.0/255.0 blue:54.0/255.0 alpha:1.0];
     
-    QZPageSwitch *nSwitch = [[QZPageSwitch alloc] initWithTitles:@[@"你好",@"我好大家好大家好大家好",@"大家好"]];
+    QZPageSwitch *nSwitch = [[QZPageSwitch alloc] initWithTitles:@[@"你好",@"滚动大小跟随",@"大家好"]];
     [nSwitch addTarget:self action:@selector(switchChange:) forControlEvents:UIControlEventValueChanged];
     nSwitch.backgroundColor = [UIColor yellowColor];
     nSwitch.titleColor = [UIColor purpleColor];
