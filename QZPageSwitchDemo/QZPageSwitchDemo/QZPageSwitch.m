@@ -135,9 +135,13 @@
         switchPageView.contentSize = CGSizeMake(switchPageView.bounds.size.width * self.titles.count, switchPageView.bounds.size.height);
         [switchPageView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
         // 可以设置偏移
+        if (self.selectedIndex > 0) {
+            CGPoint contentOffset = CGPointMake(self.selectedIndex * switchPageView.bounds.size.width, 0);
+            [switchPageView setContentOffset:contentOffset animated:NO];
+        }
     }
 }
-#pragma mark ————— 事件 —————l
+#pragma mark ————— action —————
 // 点击switch滑块
 - (void)tapped:(UITapGestureRecognizer *)gesture {
     CGPoint location = [gesture locationInView:self];
@@ -292,6 +296,9 @@
 }
 // QZPageSwitchFollowStyleMatch时计算对应index的滑块的frame
 - (CGRect)expectedFrameForSelectedBackgroundViewToIndex:(NSInteger)toIndex {
+    NSString *desc = [NSString stringWithFormat:@"%s方法中数组越界,请传如合理的角标数值",__func__];
+    BOOL condition = toIndex < self.titleLabels.count;
+    NSAssert(condition, desc);
     UILabel *toLabel = self.titleLabels[toIndex];
     CGRect toFrame   = toLabel.frame;
     CGFloat toHeight  = self.bounds.size.height - self.selectedBackgroundInset * 2;
