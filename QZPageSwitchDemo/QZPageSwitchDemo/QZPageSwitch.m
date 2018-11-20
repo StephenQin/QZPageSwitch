@@ -241,8 +241,10 @@
         {
             if (!self.switchPageView.decelerating && !self.switchPageView.isTracking) { // 点击或拖动switch或计算默认位置
                 _bgFrame =  self.selectedBackgroundView.frame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
+                QZLog(@"1switch的frame是%@",NSStringFromCGRect(self.selectedBackgroundView.frame));
             } else {// 拖动switchPageView
                 QZLog(@"2switch的frame是%@",NSStringFromCGRect(self.selectedBackgroundView.frame));
+                QZLog(@"self.selectedIndex = %zd",self.selectedIndex);
             }
         }
             break;
@@ -252,12 +254,12 @@
 }
 // scrollview的contentOffset监听方法
 - (void)moveSwitchBySwitchPageView:(UIScrollView *)switchPageView {
-    if (!switchPageView.isDragging && !switchPageView.isDecelerating) {return;}
+    if (!switchPageView.isDragging && !switchPageView.isDecelerating) {return;}// 选择switch引起的偏移
     if (switchPageView.contentOffset.x < 0 || switchPageView.contentOffset.x > switchPageView.contentSize.width - switchPageView.bounds.size.width) {return;}
     CGFloat currentOffSetX = switchPageView.contentOffset.x;
     CGFloat offsetProgress = currentOffSetX / switchPageView.bounds.size.width;
     CGRect bgFrame = self.selectedBackgroundView.frame;
-    NSInteger index = ceilf(offsetProgress);
+    NSInteger index = floor(offsetProgress);
     CGFloat progress = offsetProgress - (NSInteger)offsetProgress;
     NSInteger toIndex = 0;
     NSInteger fromIndex = 0;
@@ -271,27 +273,19 @@
         case QZPageSwitchFollowStyleMatch:
         {
             _lastOffSetX = switchPageView.bounds.size.width * self.selectedIndex;
-            if (currentOffSetX - _lastOffSetX > 0) { // left
-                if (progress == 0) {progress = 1;}
-                fromIndex = currentOffSetX / switchPageView.bounds.size.width;
-                toIndex = progress == 1 ? fromIndex : fromIndex + 1;
-                CGRect toFrame = [self expectedFrameForSelectedBackgroundViewToIndex:toIndex];
-                bgFrame.origin.x = (toFrame.origin.x - _bgFrame.origin.x) * progress + _bgFrame.origin.x;
-                bgFrame.size.width = (toFrame.size.width - _bgFrame.size.width) * progress + _bgFrame.size.width;
-                self.selectedBackgroundView.frame = bgFrame;
-            } else if (currentOffSetX - _lastOffSetX < 0) {// right
-                toIndex = currentOffSetX / switchPageView.bounds.size.width;
-                CGRect toFrame = [self expectedFrameForSelectedBackgroundViewToIndex:toIndex];
-                bgFrame.origin.x = (toFrame.origin.x - _bgFrame.origin.x) * (1 - progress) + _bgFrame.origin.x;
-                bgFrame.size.width = (toFrame.size.width - _bgFrame.size.width) * (1 - progress) + _bgFrame.size.width;
-                self.selectedBackgroundView.frame = bgFrame;
+            if (self.selectedIndex - index != 0) {
+                self.selectedIndex = index;
+                _bgFrame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
             }
+            if (progress == 0.0) {progress = 1.0;}
+            fromIndex = currentOffSetX / switchPageView.bounds.size.width;
+            toIndex = progress == 1.0 ? fromIndex : fromIndex + 1;
+            CGRect toFrame = [self expectedFrameForSelectedBackgroundViewToIndex:toIndex];
+            bgFrame.origin.x = (toFrame.origin.x - _bgFrame.origin.x) * progress + _bgFrame.origin.x;
+            bgFrame.size.width = (toFrame.size.width - _bgFrame.size.width) * progress + _bgFrame.size.width;
+            self.selectedBackgroundView.frame = bgFrame;
         }
             break;
-    }
-    if (switchPageView.contentOffset.x == index * switchPageView.bounds.size.width) {
-        self.selectedIndex = index;
-        _bgFrame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
     }
 }
 // QZPageSwitchFollowStyleMatch时计算对应index的滑块的frame
@@ -366,9 +360,8 @@
 }
 - (void)dealloc {
     [self.selectedBackgroundView removeObserver:self forKeyPath:@"frame"];
-    if (self.switchPageView) {
-        [self.switchPageView removeObserver:self forKeyPath:@"contentOffset"];
-    }
+    if (self.switchPageView)
+    [self.switchPageView removeObserver:self forKeyPath:@"contentOffset"];
 }
 
 #pragma mark ————— kvo —————
