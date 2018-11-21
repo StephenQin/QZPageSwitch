@@ -35,6 +35,7 @@
 @implementation QZPageSwitch {
     CGFloat _lastOffSetX;
     CGRect  _bgFrame;
+    BOOL    _isRight;
 }
 
 #pragma mark ————— 取值 —————
@@ -133,7 +134,7 @@
     if (switchPageView) {
         switchPageView.pagingEnabled = YES;
         switchPageView.contentSize = CGSizeMake(switchPageView.bounds.size.width * self.titles.count, switchPageView.bounds.size.height);
-        [switchPageView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+        [switchPageView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
         // 可以设置偏移
         if (self.selectedIndex > 0) {
             CGPoint contentOffset = CGPointMake(self.selectedIndex * switchPageView.bounds.size.width, 0);
@@ -259,10 +260,12 @@
     CGFloat currentOffSetX = switchPageView.contentOffset.x;
     CGFloat offsetProgress = currentOffSetX / switchPageView.bounds.size.width;
     CGRect bgFrame = self.selectedBackgroundView.frame;
-    NSInteger index = floor(offsetProgress);
+    NSInteger index     = floor(offsetProgress);
+    NSInteger ceilIndex = ceilf(offsetProgress);
     CGFloat progress = offsetProgress - (NSInteger)offsetProgress;
     NSInteger toIndex = 0;
     NSInteger fromIndex = 0;
+    QZLog(@"index = %zd,向%@滚动",index,_isRight ? @"右" : @"左");
     switch (self.followStyle) {
         case QZPageSwitchFollowStyleNormal:
         {
@@ -274,8 +277,8 @@
         {
             _lastOffSetX = switchPageView.bounds.size.width * self.selectedIndex;
             if (self.selectedIndex - index != 0) {
-                self.selectedIndex = index;
-                _bgFrame = [self expectedFrameForSelectedBackgroundViewToIndex:self.selectedIndex];
+                _bgFrame = [self expectedFrameForSelectedBackgroundViewToIndex:index];
+                self.selectedIndex = _isRight ? index : ceilIndex;
             }
             if (progress == 0.0) {progress = 1.0;}
             fromIndex = currentOffSetX / switchPageView.bounds.size.width;
@@ -369,6 +372,11 @@
     if ([keyPath isEqualToString:@"frame"] && object == self.selectedBackgroundView) {
         self.titleMaskView.frame = self.selectedBackgroundView.frame;
     } else if ([keyPath isEqualToString:@"contentOffset"] && object == self.switchPageView) {// 根据scrollview的偏移量来设置滑块的位置
+        CGFloat oldOffsetX = [change[NSKeyValueChangeOldKey] CGPointValue].x;
+        CGFloat newOffsetX = [change[NSKeyValueChangeNewKey] CGPointValue].x;
+        CGFloat deltaX     = newOffsetX - oldOffsetX;
+        _isRight = deltaX > 0 ? YES : NO;
+        QZLog(@"向%@滚动",_isRight ? @"右" : @"左");
         [self moveSwitchBySwitchPageView:self.switchPageView];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
