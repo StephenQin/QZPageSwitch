@@ -23,7 +23,7 @@
     self.navigationController.navigationBar.translucent  = NO;
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:252.0/255.0 green:182.0/255.0 blue:54.0/255.0 alpha:1.0];
     
-    QZPageSwitch *nSwitch = [[QZPageSwitch alloc] initWithTitles:@[@"你好",@"滚动大小跟随",@"大家好"]];
+    QZPageSwitch *nSwitch = [[QZPageSwitch alloc] initWithTitles:@[@"好",@"滚动大小跟随",@"大家好"]];
     [nSwitch addTarget:self action:@selector(switchChange:) forControlEvents:UIControlEventValueChanged];
     nSwitch.backgroundColor = [UIColor yellowColor];
     nSwitch.titleColor = [UIColor purpleColor];
@@ -37,8 +37,34 @@
     self.navigationItem.titleView = nSwitch;
     self.pageSwitch = nSwitch;
     
+    QZPageSwitch *tSwitch = [[QZPageSwitch alloc] initWithTitles:@[@"好",@"你是谁呀",@"大家好",@"我就是来玩儿的"]];
+    [tSwitch addTarget:self action:@selector(switchChange:) forControlEvents:UIControlEventValueChanged];
+    tSwitch.backgroundColor = [UIColor yellowColor];
+    tSwitch.titleColor = [UIColor purpleColor];
+    tSwitch.selectedBackgroundColor = [UIColor blueColor];
+    tSwitch.selectedTitleColor = [UIColor yellowColor];
+    tSwitch.titleFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:20];
+    tSwitch.selectedBackgroundInset = 0;
+    tSwitch.frame = CGRectMake(50, 10, 250, 30);
+    [tSwitch setSelectedIndex:1 animated:NO];
+    [tSwitch setBadgeValue:5 forIndex:1];
+    [self.view addSubview:tSwitch];
+    
+    QZPageSwitch *tSwitch2 = [[QZPageSwitch alloc] initWithTitles:@[@"好",@"你是谁呀",@"大家好",@"我就是来"]];
+    [tSwitch2 addTarget:self action:@selector(switchChange:) forControlEvents:UIControlEventValueChanged];
+    tSwitch2.backgroundColor = [UIColor yellowColor];
+    tSwitch2.titleColor = [UIColor purpleColor];
+    tSwitch2.selectedBackgroundColor = [UIColor blueColor];
+    tSwitch2.selectedTitleColor = [UIColor yellowColor];
+    tSwitch2.titleFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:20];
+    tSwitch2.selectedBackgroundInset = 0;
+    tSwitch2.frame = CGRectMake(50, 50, 250, 30);
+    [tSwitch2 setSelectedIndex:1 animated:NO];
+    [tSwitch2 setBadgeValue:5 forIndex:1];
+    [self.view addSubview:tSwitch2];
+    
     QZPageSwitch *vSwitch = [[QZPageSwitch alloc] init];
-    vSwitch.titles = @[@"昨天",@"今天",@"明天"];
+    vSwitch.titles = @[@"昨",@"今天中华人民共和国",@"明天"];
     vSwitch.backgroundColor = [UIColor redColor];
     vSwitch.titleColor = [UIColor whiteColor];
     vSwitch.selectedBackgroundColor = [UIColor whiteColor];
@@ -71,6 +97,10 @@
     pageVcBtn.backgroundColor = [UIColor redColor];
     [pageVcBtn addTarget:self action:@selector(pageVcBtnAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:pageVcBtn];
+    UISegmentedControl *segment = [[UISegmentedControl alloc] initWithItems:@[@"中华人民共和国",@"中国"]];
+    segment.frame = CGRectMake(50, 400, 100, 40);
+    [segment setWidth:60 forSegmentAtIndex:0];
+    [self.view addSubview:segment];
 }
 - (void)pageVcBtnAction:(UIButton *)sender {
     pageViewController *pageVc = [pageViewController new];

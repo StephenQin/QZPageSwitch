@@ -199,15 +199,46 @@
 // 布局
 - (void)layoutSubviews {
     [super layoutSubviews];
+    // 均分的宽度，均分时的最大宽度，超出需要压缩，自适应时小于等于这个宽度保持原有宽度，超出的压缩成等宽；
     CGFloat selectedBackgroundWidth = self.bounds.size.width / (CGFloat)(self.titleLabels.count) - self.selectedBackgroundInset * 2.0;
     self.titleLabelsContentView.frame = self.selectedTitleLabelsContentView.frame = self.bounds;
     self.layer.cornerRadius = self.bounds.size.height * 0.5;
     CGFloat titleLabelMaxWidth = selectedBackgroundWidth;
     CGFloat titleLabelMaxHeight = self.bounds.size.height - self.selectedBackgroundInset * 2.0;
+     __block CGFloat totalWidth = 0;
+    NSInteger countForLongLabel = 0;
+    CGFloat aveSpaceMore = 0.0;
+    if (self.distributionWay == QZPageSwitchDistributionWayNotScrollAdaptContent) {
+        CGFloat totalWidth = 0;
+        for (UILabel *label in self.titleLabels) {
+            CGSize size = [label sizeThatFits:CGSizeMake(titleLabelMaxWidth, titleLabelMaxHeight)];
+            totalWidth += size.width;
+            if (size.width > titleLabelMaxWidth) { countForLongLabel++; }
+        }
+        if (totalWidth > self.bounds.size.width - self.marginWidth * 2 - self.spaceWidth * (self.titleLabels.count - 1)) { // 超出宽度,计算平均需要减少多少
+            CGFloat spaceMore = totalWidth - (self.bounds.size.width - self.marginWidth * 2 - self.spaceWidth * (self.titleLabels.count - 1));
+            aveSpaceMore = spaceMore / countForLongLabel;
+        } else { // 没有超出宽度 self.marginWidth 设置为self.spaceWidth的一半
+            self.spaceWidth = (self.bounds.size.width - totalWidth) / self.titleLabels.count;
+            self.marginWidth = self.spaceWidth * 0.5;
+        }
+    }
     [self.titleLabels enumerateObjectsUsingBlock:^(UILabel *label, NSUInteger idx, BOOL * _Nonnull stop) {
+        double x = 0.0;
         CGSize size = [label sizeThatFits:CGSizeMake(titleLabelMaxWidth, titleLabelMaxHeight)];
-        size.width = MIN(size.width, titleLabelMaxWidth);
-        double x = floor((self.bounds.size.width / (CGFloat)self.titleLabels.count) * (CGFloat)idx + (self.bounds.size.width / (CGFloat)self.titleLabels.count - size.width) / 2.0);
+        if (self.distributionWay == QZPageSwitchDistributionWayNotScrollEqualWidth) {
+            size.width = MIN(size.width, titleLabelMaxWidth);
+            x = floor((self.bounds.size.width / (CGFloat)self.titleLabels.count) * (CGFloat)idx + (self.bounds.size.width / (CGFloat)self.titleLabels.count - size.width) / 2.0);
+        } else if (self.distributionWay == QZPageSwitchDistributionWayNotScrollAdaptContent) {
+            if (size.width <= titleLabelMaxWidth) { // 小于1/n
+                x = self.marginWidth + self.spaceWidth * idx + totalWidth;
+                totalWidth += size.width;
+            } else { // 大于1/n
+                size.width -= aveSpaceMore;
+                x = self.marginWidth + self.spaceWidth * idx + totalWidth;
+                totalWidth += size.width;
+            }
+        }
         double y = floor((self.bounds.size.height - size.height) / 2);
         CGRect frame = CGRectMake(x, y, size.width, size.height);
         label.frame = frame;
@@ -234,7 +265,7 @@
         badgeLabel.layer.cornerRadius = badgeHeight * 0.5;
         badgeLabel.layer.masksToBounds = YES;
     }];
-    switch (self.followStyle) {
+    switch (self.followStyle) { //根据followStyle设置switch滑块的frame
         case QZPageSwitchFollowStyleNormal:
             self.selectedBackgroundView.frame = CGRectMake(self.selectedBackgroundInset + (CGFloat)(self.selectedIndex) * (selectedBackgroundWidth + self.selectedBackgroundInset * 2.0), self.selectedBackgroundInset, selectedBackgroundWidth, self.bounds.size.height - self.selectedBackgroundInset * 2.0);
             break;
@@ -360,6 +391,9 @@
     self.badgeValueTextColor = [UIColor whiteColor];
     self.badgeValueBackgroundColor = [UIColor redColor];
     self.followStyle = QZPageSwitchFollowStyleNormal;
+    self.distributionWay = QZPageSwitchDistributionWayNotScrollEqualWidth;
+    self.marginWidth = 2;
+    self.spaceWidth  = 2;
 }
 - (void)dealloc {
     [self.selectedBackgroundView removeObserver:self forKeyPath:@"frame"];
