@@ -52,6 +52,10 @@ typedef NS_ENUM(NSInteger, QZPageSwitchDistributionWay) {
 @property (nonatomic, assign) CGFloat marginWidth;
 /**switch之间的间隙*/
 @property (nonatomic, assign) CGFloat spaceWidth;
+/**背景是否切圆角*/
+@property (nonatomic, assign) BOOL haveBackCorner;
+/**背景是否切圆角*/
+@property (nonatomic, assign) BOOL haveSwitchCorner;
 /**滑块的匹配模式*/
 @property (nonatomic, assign) QZPageSwitchFollowStyle followStyle;
 /**文字标题的分布方式*/

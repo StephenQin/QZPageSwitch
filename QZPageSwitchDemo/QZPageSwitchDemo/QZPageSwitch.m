@@ -202,22 +202,30 @@
     // 均分的宽度，均分时的最大宽度，超出需要压缩，自适应时小于等于这个宽度保持原有宽度，超出的压缩成等宽；
     CGFloat selectedBackgroundWidth = self.bounds.size.width / (CGFloat)(self.titleLabels.count) - self.selectedBackgroundInset * 2.0;
     self.titleLabelsContentView.frame = self.selectedTitleLabelsContentView.frame = self.bounds;
-    self.layer.cornerRadius = self.bounds.size.height * 0.5;
+    self.layer.cornerRadius = self.haveBackCorner ? self.bounds.size.height * 0.5 : 0;
     CGFloat titleLabelMaxWidth = selectedBackgroundWidth;
     CGFloat titleLabelMaxHeight = self.bounds.size.height - self.selectedBackgroundInset * 2.0;
      __block CGFloat totalWidth = 0;
     NSInteger countForLongLabel = 0;
-    CGFloat aveSpaceMore = 0.0;
+//    CGFloat aveSpaceMore = 0.0;
+    CGFloat lastAveWidth = 0.0; // 超出宽度的switch最终约定宽度
     if (self.distributionWay == QZPageSwitchDistributionWayNotScrollAdaptContent) {
         CGFloat totalWidth = 0;
+        CGFloat shotTotalWidth = 0;
         for (UILabel *label in self.titleLabels) {
             CGSize size = [label sizeThatFits:CGSizeMake(titleLabelMaxWidth, titleLabelMaxHeight)];
             totalWidth += size.width;
-            if (size.width > titleLabelMaxWidth) { countForLongLabel++; }
+            if (size.width > titleLabelMaxWidth) {
+                countForLongLabel++;
+            } else {
+                shotTotalWidth += size.width;
+            }
         }
         if (totalWidth > self.bounds.size.width - self.marginWidth * 2 - self.spaceWidth * (self.titleLabels.count - 1)) { // 超出宽度,计算平均需要减少多少
-            CGFloat spaceMore = totalWidth - (self.bounds.size.width - self.marginWidth * 2 - self.spaceWidth * (self.titleLabels.count - 1));
-            aveSpaceMore = spaceMore / countForLongLabel;
+            /*CGFloat spaceMore = totalWidth - (self.bounds.size.width - self.marginWidth * 2 - self.spaceWidth * (self.titleLabels.count - 1));
+            aveSpaceMore = spaceMore / countForLongLabel;这么计算的话，是减少相同宽度的值，那么就会有被剪掉过多的情况*/
+            // 需要知道没有超出1/n宽度的占了多长,剩下的超出的均分；
+            lastAveWidth = floor((self.bounds.size.width - self.marginWidth * 2 - self.spaceWidth * (self.titleLabels.count - 1) - shotTotalWidth) / countForLongLabel);
         } else { // 没有超出宽度 self.marginWidth 设置为self.spaceWidth的一半
             self.spaceWidth = (self.bounds.size.width - totalWidth) / self.titleLabels.count;
             self.marginWidth = self.spaceWidth * 0.5;
@@ -234,7 +242,15 @@
                 x = self.marginWidth + self.spaceWidth * idx + totalWidth;
                 totalWidth += size.width;
             } else { // 大于1/n
-                size.width -= aveSpaceMore;
+//                size.width -= aveSpaceMore; 这是剪掉相同的宽度
+                if (lastAveWidth) {
+                    if (size.width >= lastAveWidth) {
+                        size.width = lastAveWidth; // 这是改成相同的宽度避免出现全部变成省略号
+                    } else {
+                        self.spaceWidth += (lastAveWidth - size.width) / self.titleLabels.count; // 短的距离用来均分成间距
+                        [self setNeedsLayout];
+                    }
+                }
                 x = self.marginWidth + self.spaceWidth * idx + totalWidth;
                 totalWidth += size.width;
             }
@@ -267,7 +283,13 @@
     }];
     switch (self.followStyle) { //根据followStyle设置switch滑块的frame
         case QZPageSwitchFollowStyleNormal:
-            self.selectedBackgroundView.frame = CGRectMake(self.selectedBackgroundInset + (CGFloat)(self.selectedIndex) * (selectedBackgroundWidth + self.selectedBackgroundInset * 2.0), self.selectedBackgroundInset, selectedBackgroundWidth, self.bounds.size.height - self.selectedBackgroundInset * 2.0);
+            if (self.distributionWay == QZPageSwitchDistributionWayNotScrollAdaptContent) {
+                self.followStyle = QZPageSwitchFollowStyleMatch; // 这时如果是文字自适应分布，那就改变followStyle
+                [self setNeedsLayout];
+                [self layoutIfNeeded];
+            } else {
+                self.selectedBackgroundView.frame = CGRectMake(self.selectedBackgroundInset + (CGFloat)(self.selectedIndex) * (selectedBackgroundWidth + self.selectedBackgroundInset * 2.0), self.selectedBackgroundInset, selectedBackgroundWidth, self.bounds.size.height - self.selectedBackgroundInset * 2.0);
+            }
             break;
         case QZPageSwitchFollowStyleMatch:
         {
@@ -281,7 +303,7 @@
         }
             break;
     }
-    self.selectedBackgroundView.layer.cornerRadius = self.selectedBackgroundView.frame.size.height * 0.5;
+    self.selectedBackgroundView.layer.cornerRadius = self.haveSwitchCorner ? self.selectedBackgroundView.frame.size.height * 0.5 : 0; 
     self.selectedBackgroundView.layer.masksToBounds = YES;
 }
 // scrollview的contentOffset监听方法
