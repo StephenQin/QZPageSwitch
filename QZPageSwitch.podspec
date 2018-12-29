@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
                             这是一个标题透视分段选择器
                    DESC
 
-  spec.homepage     = "http://EXAMPLE/QZPageSwitch"
+  spec.homepage     = "https://github.com/StephenQin/QZPageSwitch"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -39,7 +39,7 @@ Pod::Spec.new do |spec|
   #  Popular ones are 'MIT', 'BSD' and 'Apache License, Version 2.0'.
   #
 
-  spec.license      = "MIT (example)"
+  spec.license      = "MIT"
   # spec.license      = { :type => "MIT", :file => "FILE_LICENSE" }
 
 
@@ -53,10 +53,10 @@ Pod::Spec.new do |spec|
   #  profile URL.
   #
 
-  spec.author             = { "StephenQin" => "petee@qq.com" }
+  spec.author             = { "StephenQin" => "hhyyppp@126.com" }
   # Or just: spec.author    = "StephenQin"
-  # spec.authors            = { "StephenQin" => "petee@qq.com" }
-  # spec.social_media_url   = "https://twitter.com/StephenQin"
+  # spec.authors            = { "StephenQin" => "hhyyppp@126.com" }
+  # spec.social_media_url   = ""
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -65,10 +65,10 @@ Pod::Spec.new do |spec|
   #
 
   # spec.platform     = :ios
-  # spec.platform     = :ios, "5.0"
+  # spec.platform     = :ios, "8.0"
 
   #  When using multiple platforms
-  # spec.ios.deployment_target = "5.0"
+  spec.ios.deployment_target = "8.0"
   # spec.osx.deployment_target = "10.7"
   # spec.watchos.deployment_target = "2.0"
   # spec.tvos.deployment_target = "9.0"
@@ -80,7 +80,7 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "http://EXAMPLE/QZPageSwitch.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/StephenQin/QZPageSwitch.git", :tag => "#{spec.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -91,7 +91,7 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "Classes", "Classes/**/*.{h,m}"
+  spec.source_files  = "QZPageSwitch"
   spec.exclude_files = "Classes/Exclude"
 
   # spec.public_header_files = "Classes/**/*.h"
