@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "QZPageSwitch"
-  spec.version      = "0.0.1"
+  spec.version      = "1.0"
   spec.summary      = "标题透视分段选择器"
 
   # This description is used to generate tags and improve search results.
@@ -64,8 +64,8 @@ Pod::Spec.new do |spec|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-  # spec.platform     = :ios
-  # spec.platform     = :ios, "8.0"
+  spec.platform     = :ios
+  spec.platform     = :ios, "8.0"
 
   #  When using multiple platforms
   spec.ios.deployment_target = "8.0"
@@ -80,7 +80,7 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/StephenQin/QZPageSwitch.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/StephenQin/QZPageSwitch.git", :tag => spec.version }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
